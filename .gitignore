@@ -42,3 +42,8 @@ app-example
 # generated native folders
 /ios
 /android
+
+# python venv and scratch
+venv/
+scratch/
+.venv/

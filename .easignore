@@ -1,0 +1,9 @@
+node_modules/
+dist/
+venv/
+scratch/
+.venv/
+.expo/
+android/
+ios/
+.env*

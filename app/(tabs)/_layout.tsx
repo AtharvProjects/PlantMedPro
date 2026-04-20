@@ -60,7 +60,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="ai-doctor"
         options={{
-          title: 'AI Doctor',
+          title: 'Plant Doctor',
           tabBarStyle: { display: 'none' }, // Hide tab bar for full-screen camera
           tabBarIcon: ({ color, focused }) => (
             <View style={{

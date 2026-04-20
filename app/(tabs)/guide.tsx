@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { View, Text, ScrollView, Dimensions, TouchableOpacity, Platform, Animated } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 
@@ -67,22 +67,50 @@ const SAFETY_INDICATORS = [
 export default function GuideScreen() {
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const startAutoPlay = () => {
+    stopAutoPlay();
+    timerRef.current = setInterval(() => {
+      setActiveIndex((prev) => {
+        const next = (prev + 1) % GUIDE_PAGES.length;
+        scrollViewRef.current?.scrollTo({ x: next * (width - 24), animated: true });
+        return next;
+      });
+    }, 3500); // Auto-advance every 3.5 seconds
+  };
+
+  const stopAutoPlay = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+  };
+
+  useEffect(() => {
+    startAutoPlay();
+    return stopAutoPlay;
+  }, []);
 
   const handleScroll = (event: any) => {
     const x = event.nativeEvent.contentOffset.x;
-    const index = Math.round(x / (width - 40));
-    setActiveIndex(index);
+    const index = Math.round(x / (width - 24));
+    if (index >= 0 && index < GUIDE_PAGES.length) {
+      setActiveIndex(index);
+    }
   };
 
   const goToSlide = (i: number) => {
-    scrollViewRef.current?.scrollTo({ x: i * (width - 40), animated: true });
+    scrollViewRef.current?.scrollTo({ x: i * (width - 24), animated: true });
     setActiveIndex(i);
+    startAutoPlay(); // Reset timer when manually navigating
   };
 
   const page = GUIDE_PAGES[activeIndex];
 
   return (
-    <View style={{ flex: 1, backgroundColor: page?.color ?? '#f0fdf4' }}>
+    <ScrollView 
+      style={{ flex: 1, backgroundColor: page?.color ?? '#f0fdf4' }}
+      contentContainerStyle={{ paddingBottom: 130 }}
+      showsVerticalScrollIndicator={false}
+    >
       {/* Header */}
       <View style={{ paddingTop: Platform.OS === 'ios' ? 60 : 48, paddingHorizontal: 20, paddingBottom: 16 }}>
         <Text style={{ fontSize: 13, fontWeight: '700', color: '#6b7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>Interactive Guide</Text>
@@ -107,10 +135,15 @@ export default function GuideScreen() {
         ref={scrollViewRef}
         horizontal
         pagingEnabled={false}
-        snapToInterval={width - 40}
+        snapToInterval={width - 24} // Correct interval: card width (width - 40) + gap (16)
+        snapToAlignment="start"
         decelerationRate="fast"
         showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={handleScroll}
+        onScrollBeginDrag={stopAutoPlay}
+        onMomentumScrollEnd={(e) => {
+          handleScroll(e);
+          startAutoPlay(); // Resume auto-play after swipe
+        }}
         contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}
         style={{ flexGrow: 0 }}>
         {GUIDE_PAGES.map((p) => (
@@ -155,7 +188,7 @@ export default function GuideScreen() {
       </View>
 
       {/* Safety Indicators Section */}
-      <ScrollView style={{ flex: 1, marginTop: 20 }} contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 130 }}>
+      <View style={{ marginTop: 24, paddingHorizontal: 20 }}>
         <Text style={{ fontSize: 18, fontWeight: '800', color: '#14532d', marginBottom: 14 }}>Safety Indicators 🛡️</Text>
         <View style={{ backgroundColor: 'white', borderRadius: 24, padding: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 }}>
           {SAFETY_INDICATORS.map((indicator, i) => (
@@ -189,7 +222,7 @@ export default function GuideScreen() {
             </View>
           </View>
         ))}
-      </ScrollView>
-    </View>
+      </View>
+    </ScrollView>
   );
 }

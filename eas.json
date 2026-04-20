@@ -1,0 +1,45 @@
+{
+  "cli": {
+    "version": ">= 7.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_GEMINI_KEY": "YOUR_GEMINI_KEY",
+        "EXPO_PUBLIC_GEMINI_KEY_2": "YOUR_GEMINI_KEY_2",
+        "EXPO_PUBLIC_GEMINI_KEY_3": "YOUR_GEMINI_KEY_3",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://horgkvajmejfbkrtsuqi.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "YOUR_SUPABASE_ANON_KEY",
+        "EXPO_PUBLIC_OPENWEATHER_KEY": "YOUR_OPENWEATHER_KEY",
+        "EXPO_PUBLIC_ROBOFLOW_API_KEY": "YOUR_ROBOFLOW_API_KEY",
+        "EXPO_PUBLIC_ROBOFLOW_MODEL_ID": "plant-disease-classification-dvfsj",
+        "EXPO_PUBLIC_ROBOFLOW_MODEL_VERSION": "1"
+      }
+    },
+    "production": {
+      "android": {
+        "buildType": "app-bundle"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./google-service-account.json",
+        "track": "internal"
+      }
+    }
+  }
+}
